@@ -19,35 +19,46 @@ app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
 
-app.get(`/test${'?'}`, function (req, res) {
-  var url = req.url;
-  console.log(req);
-  if (url == '/test?id=2') {
-    console.log("/test?id=2");
-  } else if (url == '/test?id=1') {
-    console.log('/test?id=1');
-  } else if (url == '/test') {
-    console.log('/test');
-  }
-  res.render('main.pug');
-});
-
-
-app.get('/', function (req, res) {
-  res.render('main.pug');
-});
-app.get('/cat', function (req, res) {
+app.get(`/category`, function (req, res) {
   con.query(
     'SELECT * FROM goods',
     function(error, result){
       if (error) throw error;
-      //console.log(result);
+
       let goods ={};
       for (let i=0; i<result.length; i++) {
         goods[result[i]['id']] = result[i];
       }
-      //console.log(goods);
-      console.log(JSON.parse(JSON.stringify(goods)));
+      let url = req.url;
+      if (url == '/category?id=2') {
+        console.log(goods);
+        res.render('category_phones.pug', {
+          title: 'Телефоны',
+          goods: JSON.parse(JSON.stringify(goods))
+        });
+      } else if (url == '/category?id=1') {
+        console.log("/category?id=1");
+        res.render('category_notebook.pug', {
+          title: 'Ноутбуки',
+          bar: 11,
+          goods: JSON.parse(JSON.stringify(goods))
+        });
+      }
+    }
+  );
+});
+app.get('/', function (req, res) {
+  res.render('main.pug');
+});
+/* app.get('/cat', function (req, res) {
+  con.query(
+    'SELECT * FROM goods',
+    function(error, result){
+      if (error) throw error;
+      let goods ={};
+      for (let i=0; i<result.length; i++) {
+        goods[result[i]['id']] = result[i];
+      }
       res.render('category.pug', {
         foo: 4,
         bar: 7,
@@ -55,5 +66,4 @@ app.get('/cat', function (req, res) {
       });
     }
   );
-
-});
+}); */

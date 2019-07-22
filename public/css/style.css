@@ -1,8 +1,54 @@
 * {
-    font-family: sans-serif;
-    margin: 0;
+  font-family: sans-serif;
+  margin: 0;
+}
+.btn {
+  padding: 10px 15px;
+  background-color: #079c07;
+  color: #fff;
+  border-radius: 3px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 .header {
-    padding: 30px 50px;
-    background-color: #ffc107;
+  padding: 30px 50px;
+  background-color: #ffc107;
+}
+.main {
+  padding: 5px;
+}
+.main h3 {
+  padding: 20px 0;
+}
+.listing_block {
+  display: flex;
+  flex-wrap: wrap;
+}
+.listing_block .one_good {
+  width: 32%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 2% 30px 0;
+  border: 1px solid #e6e6e6;
+  border-radius: 5px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  padding: 3%;
+  box-sizing: border-box;
+}
+.listing_block .one_good:nth-child(3n) {
+  margin-right: 0;
+}
+.listing_block .one_good .title {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.listing_block .one_good .goods_img {
+  max-width: 100%;
+  margin-bottom: 15px;
+}
+.listing_block .one_good .price {
+  margin-bottom: 20px;
 }
