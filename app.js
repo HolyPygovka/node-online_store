@@ -4,6 +4,7 @@ let mysql = require('mysql'); //connect module mysql
 
 app.use(express.static('public')); /* public - name folder with static */
 app.use(express.static(__dirname + '/node_modules/bootstrap/dist'));
+app.use(express.json());
 
 /* set the template engine */
 app.set('view engine', 'pug');
@@ -65,5 +66,16 @@ app.post('/get-category-list', function(req, res){
   con.query('SELECT id, category FROM category', function(error, result, fields){
     if (error) throw error;
     res.json(result);
+  });
+});
+
+app.post('/get-goods-info', function(req, res){
+  con.query('SELECT id, name, cost FROM goods WHERE id IN('+req.body.key.join(',')+')', function(error, result, fields){
+    if (error) throw error;
+    let goods = {};
+    for (let i = 0; i < result.length; i++) {
+      goods[result[i]['id']] = result[i];
+    }
+    res.json(goods);
   });
 });
