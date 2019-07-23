@@ -1,13 +1,14 @@
-let express = require('express'); //подключаем модуль express
-let app = express(); //создаю экземпляр экспресса
-let mysql = require('mysql'); //подключаем модуль mysql
+let express = require('express'); //connect module express
+let app = express(); //create instance of express
+let mysql = require('mysql'); //connect module mysql
 
-app.use(express.static('public')); /* public - имя папки где храниться статика */
+app.use(express.static('public')); /* public - name folder with static */
+app.use(express.static(__dirname + '/node_modules/bootstrap/dist'));
 
-/* Задаём шаблонизатор */
+/* set the template engine */
 app.set('view engine', 'pug');
 
-/* Настраиваем mysql модуль  */
+/* setting mysql module  */
 let con = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -19,51 +20,50 @@ app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
 
-app.get(`/category`, function (req, res) {
-  con.query(
-    'SELECT * FROM goods',
-    function(error, result){
-      if (error) throw error;
-
-      let goods ={};
-      for (let i=0; i<result.length; i++) {
-        goods[result[i]['id']] = result[i];
-      }
-      let url = req.url;
-      if (url == '/category?id=2') {
-        console.log(goods);
-        res.render('category_phones.pug', {
-          title: 'Телефоны',
-          goods: JSON.parse(JSON.stringify(goods))
-        });
-      } else if (url == '/category?id=1') {
-        console.log("/category?id=1");
-        res.render('category_notebook.pug', {
-          title: 'Ноутбуки',
-          bar: 11,
-          goods: JSON.parse(JSON.stringify(goods))
-        });
-      }
-    }
-  );
-});
 app.get('/', function (req, res) {
   res.render('main.pug');
 });
-/* app.get('/cat', function (req, res) {
-  con.query(
-    'SELECT * FROM goods',
-    function(error, result){
-      if (error) throw error;
-      let goods ={};
-      for (let i=0; i<result.length; i++) {
-        goods[result[i]['id']] = result[i];
+
+app.get('/cat', function(req, res){
+  let catId = req.query.id;
+
+  let cat = new Promise(function(resolve, reject){
+    con.query(
+      'SELECT * FROM category WHERE id='+catId,
+      function(error, result){
+        if (error) reject(error);
+        resolve(result);
       }
-      res.render('category.pug', {
-        foo: 4,
-        bar: 7,
-        goods: JSON.parse(JSON.stringify(goods))
-      });
-    }
-  );
-}); */
+    );
+  });
+  let goods = new Promise(function(resolve, reject){
+    con.query(
+      'SELECT * FROM goods WHERE category='+catId,
+      function(error, result){
+        if (error) reject(error);
+        resolve(result);
+      }
+    );
+  });
+
+  Promise.all([cat, goods]).then(function(value){
+    res.render('cat', {
+      cat: JSON.parse(JSON.stringify(value[0])),
+      goods: JSON.parse(JSON.stringify(value[1]))
+    })
+  });
+});
+
+app.get('/goods', function(req, res){
+  con.query('SELECT * FROM goods WHERE id='+req.query.id, function(error, result, fields){
+    if (error) throw error;
+    res.render('goods', {goods: JSON.parse(JSON.stringify(result))});
+  });
+});
+
+app.post('/get-category-list', function(req, res){
+  con.query('SELECT id, category FROM category', function(error, result, fields){
+    if (error) throw error;
+    res.json(result);
+  });
+});

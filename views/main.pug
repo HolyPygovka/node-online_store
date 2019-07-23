@@ -1,4 +1,9 @@
 include header
 
-div(class="header")
-    h2 My Shop
+div(class="wrap")
+    div(class="content")
+        header(class="site-header")
+            include site_header
+        include nav.pug
+    include footer
+
